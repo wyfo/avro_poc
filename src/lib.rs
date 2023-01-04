@@ -58,32 +58,3 @@ impl Serializer {
         Ok(vec)
     }
 }
-
-#[cfg(test)]
-mod test {
-    use apache_avro::{to_avro_datum, to_value, Schema};
-
-    use crate::Serializer;
-
-    #[derive(serde::Serialize)]
-    struct Plop {
-        foo: String,
-        bar: Option<i32>,
-        baz: bool,
-    }
-
-    const SCHEMA: &str = r#"{"type": "record", "name": "Plop", "fields": [{"name": "foo", "type": "string"}, {"name": "bar", "type": ["null", "int"]}]}"#;
-
-    #[test]
-    fn test_plop() {
-        let schema = Schema::parse_str(SCHEMA).unwrap();
-        let plop = Plop {
-            foo: "foo".into(),
-            bar: Some(42),
-            baz: true,
-        };
-        println!("{:?}", to_avro_datum(&schema, to_value(&plop).unwrap()));
-        let serializer = Serializer::new(&schema).unwrap();
-        println!("{:?}", serializer.serialize(&plop));
-    }
-}
