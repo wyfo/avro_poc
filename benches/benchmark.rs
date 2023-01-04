@@ -60,11 +60,15 @@ fn bench(c: &mut Criterion, category: &'static str, schema: &'static str, value:
         to_avro_datum(&schema, to_value(&value).unwrap()).unwrap(),
         serializer.serialize(&value).unwrap()
     );
-    c.bench_with_input(BenchmarkId::new(category, "apache_avro"), &schema, |b, schema| {
-        b.iter(|| to_avro_datum(&schema, to_value(black_box(&value)).unwrap()).unwrap());
-    });
     c.bench_with_input(
-        BenchmarkId::new( category, "avro_poc"),
+        BenchmarkId::new(category, "apache_avro"),
+        &schema,
+        |b, schema| {
+            b.iter(|| to_avro_datum(&schema, to_value(black_box(&value)).unwrap()).unwrap());
+        },
+    );
+    c.bench_with_input(
+        BenchmarkId::new(category, "avro_poc"),
         &serializer,
         |b, serializer| {
             b.iter(|| serializer.serialize(black_box(&value)).unwrap());
